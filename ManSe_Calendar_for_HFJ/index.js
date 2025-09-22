@@ -531,31 +531,38 @@ app.get('/calendar-page', (req, res) => {
 
 
 // ✅ 계산 기반(달력 계산) 사주 API
+// ✅ [수정됨] 계산 기반 사주 API (우리가 만든 cli.php 사용)
 app.post("/GetMySajuCalc", (req, res) => {
-    //const { year, month, day, hour, minute } = req.body;
+    const { birthDate, birthTime } = req.body;
 
-    console.log("-------------> 받은 값 : ", req.body);
-    const birthDate = req.body.birthDate;
-    const birthTime = req.body.birthTime;
+    const year  = parseInt(birthDate.substr(0, 4));
+    const month = parseInt(birthDate.substr(4, 2));
+    const day   = parseInt(birthDate.substr(6, 2));
 
-    const year  = parseInt(birthDate.substr(0, 4));   // "1976" → 1976
-    const month = parseInt(birthDate.substr(4, 2));   // "01"   → 1
-    const day   = parseInt(birthDate.substr(6, 2));   // "16"   → 16
+    const command = `php "${path.join(__dirname, '..', 'Lunar-kasi', 'cli.php')}" solarToLunar ${year} ${month} ${day}`;
 
-    const hour   = parseInt(birthTime.substr(0, 2));  // "18" → 18
-    const minute = parseInt(birthTime.substr(2, 2));  // "30" → 30
+    exec(command, (error, stdout, stderr) => {
+        if (error) {
+            console.error(`PHP CLI 실행 오류:`, stderr);
+            return res.status(500).json({ error: `PHP 스크립트 실행 중 오류가 발생했습니다.` });
+        }
+        try {
+            const phpResult = JSON.parse(stdout);
+            const ganjiParts = phpResult.ganji.split(' '); // "을사(乙巳)년 갑신(甲申)월 계유(癸酉)일"
 
-    console.log("---> substr 결과 : "+year+'_'+month+'_'+day+'_'+hour+'_'+minute);
+            // 프론트엔드에서 요청한 형식에 맞춰 결과를 재구성합니다.
+            const result = {
+                yearPillar: ganjiParts[0].replace('년',''),
+                monthPillar: ganjiParts[1].replace('월',''),
+                dayPillar: ganjiParts[2].replace('일','')
+            };
+            res.json(result);
 
-    const result = calendrical.getSexagenary(
-        parseInt(year),
-        parseInt(month),
-        parseInt(day),
-        parseInt(hour) || 0,
-        parseInt(minute) || 0
-    );
-
-    res.json(result);
+        } catch (parseError) {
+            console.error(`PHP 출력 JSON 파싱 오류:`, stdout);
+            res.status(500).json({ error: 'PHP로부터 받은 결과 처리 중 오류가 발생했습니다.' });
+        }
+    });
 });
 
 // ... 기존 /GetMySajuCalc 라우트와 같은 다른 코드들 아래 ...

@@ -311,34 +311,64 @@ async function getMySajuCalc(birthDate, birthTime) {
 }
 
 // (테스트 버튼용) 계산버전 호출해서 결과 확인
+/**
+ * [수정됨] 생년월일시를 입력받아, DB를 사용하지 않는 계산 API('/GetMySajuCalc')를 호출하여
+ * 년주, 월주, 일주를 콘솔에 출력하는 테스트 함수입니다.
+ */
+/**
+ * [수정됨] index.html에서 전달받은 생년월일시 정보를 사용하여,
+ * DB를 사용하지 않는 계산 API('/GetMySajuCalc')를 호출하고 결과를 콘솔에 출력합니다.
+ */
+/**
+ * [최종 수정] localStorage에 저장된 사주 정보(mySaju 객체)를 사용하여,
+ * DB를 사용하지 않는 계산 API('/GetMySajuCalc')를 호출하고 결과를 콘솔에 출력합니다.
+ */
 async function testCalcSaju() {
-
-    const parsed = JSON.parse(sajuData.mySajuResult);
-
-    const birthDate = parsed.birthDate;   // ✅ 서버에서 내려준 원본값
-    const birthTime = parsed.birthTime;
-    const lunar     = parsed.lunar;
-    const leapMonth = parsed.leapMonth;
-
-    console.log("생년월일:", birthDate);
-    console.log("출생시간:", birthTime);
-    console.log("음력여부:", lunar);
-    console.log("윤달여부:", leapMonth);
-
-    if (birthDate.length !== 8) {
-        alert('생년월일은 YYYYMMDD 형식으로 입력해주세요.');
-        return;
-    }
-    const data = await getMySajuCalc(birthDate, birthTime);
-    if (data.error) {
-        alert('오류: ' + data.error);
-        console.error(data);
+    // 1. [핵심] localStorage에서 이미 불러온 mySaju 객체의 원본 데이터를 사용합니다.
+    //    - mySaju.birthDate: 원본 생년월일 (예: "19781219")
+    //    - mySaju.birthTime: 원본 출생시간 (예: "1830")
+    if (!mySaju || !mySaju.birthDate) {
+        alert("localStorage에서 사주 정보를 찾을 수 없습니다. index.html 페이지에서 다시 입력해주세요.");
         return;
     }
 
-    // 여기서 DOM에 뿌리거나, 일단 콘솔로 확인
-    console.log('계산기반 결과', data);
-    alert('계산기반 결과를 콘솔에서 확인하세요.');
+    const birthDate = mySaju.birthDate;
+    const birthTime = mySaju.birthTime;
+
+    console.log(`[요청 정보] (LocalStorage) 생년월일: ${birthDate}, 출생시간: ${birthTime}`);
+
+    // 2. 백엔드의 계산 API('/GetMySajuCalc')에 POST 방식으로 데이터를 전송합니다.
+    try {
+        const response = await fetch('/GetMySajuCalc', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                birthDate: birthDate,
+                birthTime: birthTime || "0000"
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`서버 응답 오류: ${response.statusText}`);
+        }
+
+        const sajuData = await response.json();
+
+        // 3. 서버로부터 받은 결과를 콘솔에 보기 좋게 출력합니다.
+        console.log("---------- [계산 결과 (DB 미사용)] ----------");
+        console.log("년주(年柱):", sajuData.yearPillar);
+        console.log("월주(月柱):", sajuData.monthPillar);
+        console.log("일주(日柱):", sajuData.dayPillar);
+        console.log("------------------------------------------");
+
+        alert("계산이 완료되었습니다. F12를 눌러 콘솔창에서 결과를 확인하세요.");
+
+    } catch (error) {
+        console.error('사주 계산 중 오류 발생:', error);
+        alert('사주 정보를 계산하는 데 실패했습니다.');
+    }
 }
 
 // =======================================================
