@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>만세력Test</title>
+
+    <!-- 반응형 웹페이지 viewport 설정-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="내 사주를 공부하며 나를 알아가는 공간입니다.">
+    <meta name="keywords" content="사주, 팔자, 운명, 공부, 인간관계">
+    <meta property="og:title" content="만세력Test">
+    <meta property="og:description" content="내 사주를 공부하며 나를 알아가는 공간입니다.">
+    <meta property="og:image" content="https://sajualla.pages.dev/img/sajuAlla.jpg">
+    <meta property="og:url" content="https://sajualla.pages.dev/index.html">
+
+    <!-- https://www.favicon-generator.org/ -->
+    <link rel="icon" type="image/png" href="./img/favicon.png">
+
+    <!-- Noto Sans KR -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+
+    <!-- Main CSS File -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- sweetalert https://sweetalert.js.org/guides/ -->
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    <!-- Verify google console -->
+    <meta name="google-site-verification" content="0mgurDCmEnKnEaCBmQdyofYA77Tz7vo110WXVw2M-JE"/>
+</head>
+
+<body>
+<div class="main-container">
+    <div class="main-content">
+        <div class="body-container">
+            <!--
+            <img src="./img/sajuAlla.jpg" alt="Saju Alla Image" style="width: 100%;">
+            <a id="copyright" href="https://blog.naver.com/weisoon" target="_blank">by 블로거 수니</a>
+            -->
+            <h1 style="color: black;">만세력 Test</h1>
+
+            <table border="0">
+                <tbody>
+                <tr>
+                    <td style="width: 17%;">
+                        <label for="inName" style="float: right;">이름:</label>
+                    </td>
+                    <td style="width: 45%; text-align: center;">
+                        <input type="text" placeholder="홍아무개" id="name" maxlength="10" tabindex="1" value="">
+                    </td>
+                    <td style="width: 38%;">
+                        <label><input type="radio" id="female" name="gender" checked>여자</label>
+                        <label><input type="radio" id="male" name="gender">남자</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 17%;">
+                        <label for="birthDate" style="float: right;">생년월일:</label>
+                    </td>
+                    <td style="width: 45%; text-align: center;">
+                        <input type="text" placeholder="1980518" id="birthDate" maxlength="8" tabindex="2" value="">
+                    </td>
+                    <td style="width: 38%;">
+                        <label><input type="checkbox" id="lunar">음력</label>
+                        <label><input type="checkbox" id="leapMonth">윤달</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 17%;">
+                        <label for="birthTime" style="float: right;">출생시간:</label>
+                    </td>
+                    <td style="width: 45%; text-align: center;">
+                        <input type="text" placeholder="1335" id="birthTime" maxlength="4" tabindex="3" value="">
+                    </td>
+                    <td style="width: 38%;">
+                        <label><input type="checkbox" id="noBirthTime">모름</label>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <button id="start-btn" tabindex="4" onclick="startMySaju()">만세력 보기</button>
+        </div>
+        <footer>
+            <!-- Copyright -->
+            <!-- <a id="copyright" href="https://www.buymeacoffee.com/sooni.roh" target="_blank">후원 (buymeacoffee)</a>
+            Email: <a id="copyright" href="mailto:sooni.roh@gmail.com">sooni.roh@gmail.com</a> -->
+        </footer>
+    </div>
+</div>
+
+<!-- mainScript JS File -->
+<script type="text/javascript" src="mainScript.js"></script>
+
+</body>
+
+</html>

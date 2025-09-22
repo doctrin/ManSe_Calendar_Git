@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>AD <%= year %>년 (<%= header.yearGanzhi %>) <%= String(month).padStart(2,'0') %>월 (<%= header.monthGanzhi %>)</title>
+    <link rel="stylesheet" href="/public/css/calendar.css" />
+</head>
+<body>
+<div class="toolbar">
+    <a class="nav-btn" href="/calendar-page/<%= prev.y %>/<%= prev.m %>">◀ 이전월</a>
+    <h1>AD <%= year %>년 (<%= header.yearGanzhi %>) <%= String(month).padStart(2,'0') %>월 (<%= header.monthGanzhi %>)</h1>
+    <a class="nav-btn" href="/calendar-page/<%= next.y %>/<%= next.m %>">다음월 ▶</a>
+</div>
+
+<table class="cal">
+    <thead>
+    <tr>
+        <th class="sun">일</th>
+        <th>월</th>
+        <th>화</th>
+        <th>수</th>
+        <th>목</th>
+        <th>금</th>
+        <th class="sat">토</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <% for (let i = 0; i < firstDay; i++) { %>
+            <td class="empty"></td>
+        <% } %>
+
+        <% days.forEach((day, idx) => { %>
+            <td class="cell">
+                <div class="solar <%= ( (idx+firstDay)%7===0 ? 'sun' : ((idx+firstDay)%7===6 ? 'sat' : '') ) %>">
+                    <%= day.solar.d %>
+                </div>
+
+                <% if (day.term) { %>
+                    <div class="term-badge" title="<%= day.term.termName %>">
+                        <%= day.term.termNameHan %>
+                    </div>
+                <% } %>
+
+                <div class="lunar">
+                    <%= day.lunar.lm %>.<%= day.lunar.ld %><%= day.lunar.leap ? ' 윤' : '' %>
+                </div>
+                <div class="ganzhi"><%= day.ganzhi %></div>
+            </td>
+
+            <% if ((idx + firstDay + 1) % 7 === 0) { %></tr><tr><% } %>
+        <% }) %>
+
+        <% const tail = (firstDay + days.length) % 7;
+        if (tail !== 0) { for (let i = tail; i < 7; i++) { %>
+            <td class="empty"></td>
+        <% }} %>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>만세력Test</title>
+
+    <!-- 반응형 웹페이지 viewport 설정-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="내 사주를 공부하며 나를 알아가는 공간입니다.">
+    <meta name="keywords" content="사주, 팔자, 운명, 공부, 인간관계">
+    <meta property="og:title" content="만세력Test">
+    <meta property="og:description" content="내 사주를 공부하며 나를 알아가는 공간입니다.">
+    <meta property="og:image" content="https://sajualla.pages.dev/img/sajuAlla.jpg">
+    <meta property="og:url" content="https://sajualla.pages.dev/index.html">
+
+    <!-- https://www.favicon-generator.org/ -->
+    <link rel="icon" type="image/png" href="./img/favicon.png">
+
+    <!-- Noto Sans KR -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+
+    <!-- Main CSS File -->
+    <link href="style.css" rel="stylesheet">
+
+    <!-- sweetalert https://sweetalert.js.org/guides/ -->
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    <!-- Verify google console -->
+    <meta name="google-site-verification" content="0mgurDCmEnKnEaCBmQdyofYA77Tz7vo110WXVw2M-JE"/>
+</head>
+
+<body>
+<div class="main-container">
+    <div class="main-content">
+        <div class="sub-page-container">
+
+            <button onclick="openCalendar()">일진달력 보기</button>
+
+            <button type="button" onclick="testCalcSaju()">계산버전(DB미사용) 테스트</button>
+
+            <table border="0" data-ke-align="alignCenter">
+                <tbody>
+                <tr>
+                    <td colspan="2" id="nameAge" style="text-align: center;"></td>
+                </tr>
+                <tr>
+                    <td id="sBirthday" style="text-align: left;"></td>
+                    <td id="birthTime" style="text-align: left;"></td>
+                </tr>
+                <tr>
+                    <td colspan="2" id="lBirthday" style="text-align: left;"></td>
+                </tr>
+                </tbody>
+            </table>
+            <br>
+            <table class="mySaju-table" border="2" data-ke-align="alignCenter">
+                <tbody>
+                <tr>
+                    <td style="width: 25%;">시주</td>
+                    <td style="width: 25%;">일주</td>
+                    <td style="width: 25%;">월주</td>
+                    <td style="width: 25%;">년주</td>
+                </tr>
+                <tr>
+                    <td id="sibsin_hhgan" style="width: 25%;"></td>
+                    <td id="sibsin_hdgan" style="width: 25%;">일간(나)</td>
+                    <td id="sibsin_hmgan" style="width: 25%;"></td>
+                    <td id="sibsin_hygan" style="width: 25%;"></td>
+                </tr>
+                <tr>
+                    <td id="hhgan" style="width: 25%;"></td>
+                    <td id="hdgan" style="width: 25%;"></td>
+                    <td id="hmgan" style="width: 25%;"></td>
+                    <td id="hygan" style="width: 25%;"></td>
+                </tr>
+                <tr>
+                    <td id="hhjee" style="width: 25%;"></td>
+                    <td id="hdjee" style="width: 25%;"></td>
+                    <td id="hmjee" style="width: 25%;"></td>
+                    <td id="hyjee" style="width: 25%;"></td>
+                </tr>
+                <tr>
+                    <td id="sibsin_hhjee" style="width: 25%;"></td>
+                    <td id="sibsin_hdjee" style="width: 25%;"></td>
+                    <td id="sibsin_hmjee" style="width: 25%;"></td>
+                    <td id="sibsin_hyjee" style="width: 25%;"></td>
+                </tr>
+                </tbody>
+            </table>
+            <br>
+
+
+            <table class="mySaju-table" border="2" data-ke-align="alignCenter">
+                <tbody>
+                <tr>
+                    <td colspan="2" style="width: 70%;">맞춤형 사주 파헤치기</td>
+                    <td style="width: 30%;">셀프 스터디</td>
+                </tr>
+                <tr>
+                    <td rowspan="3" style="width: 5%;">1.</td>
+                    <td rowspan="3" id="woljiSeason" style="width: 65%;"></td>
+                    <td style="width: 30%;"><button class="blue-btn" onclick="getSeasonOutline()">간략</button></td>
+                </tr>
+                <tr>
+                    <td style="width: 30%;"><button class="red-btn" onclick="getSeasonSummay()">요약</button></td>
+                </tr>
+                <tr>
+                    <td style="width: 30%;"><button class="green-btn" onclick="getSeasonDetail()">상세</button></td>
+                </tr>
+                <tr>
+                    <td style="width: 5%;">2.</td>
+                    <td id="peopleSkills" style="width: 65%;"></td>
+                    <td colspan="3" style="width: 30%;"><button class="yellow-btn" onclick="getPeopleSkills()">처세술</button></td>
+                </tr>
+                <tr>
+                    <td style="width: 5%;">3.</td>
+                    <td id="gangYag" style="width: 65%;"></td>
+                    <td colspan="3" style="width: 30%;"><button class="green-btn" onclick="getGangYagLink()">신강약</button></td>
+                </tr>
+                <tr>
+                    <td rowspan="3" style="width: 5%;">4.</td>
+                    <td rowspan="3" id="howToLive" style="width: 65%;"></td>
+                    <td style="width: 30%;"><button class="blue-btn" onclick="getHowToLiveOutline()">간략</button></td>
+                </tr>
+                <tr>
+                    <td style="width: 30%;"><button class="red-btn" id="howToLiveSummayBtn" onclick="getHowToLiveSummay()">요약</button></td>
+                </tr>
+                <tr>
+                    <td style="width: 30%;"><button class="green-btn" id="howToLiveDetailBtn" onclick="getHowToLiveDetail()">상세</button></td>
+                </tr>
+                <tr>
+                    <td rowspan="3" style="width: 5%;">5.</td>
+                    <td rowspan="3" id="hanNanJoSeub" style="width: 65%;"></td>
+                    <td style="width: 30%;"><button class="blue-btn" onclick="getHanNanJoSeubOutline()">간략</button></td>
+                </tr>
+                <tr>
+                    <td style="width: 30%;"><button class="red-btn" onclick="getHanNanJoSeubSummay()">요약</button></td>
+                </tr>
+                <tr>
+                    <td style="width: 30%;"><button class="green-btn" onclick="getHanNanJoSeubDetail()">상세</button></td>
+                </tr>
+                <tbody>
+            </table>
+
+            <br>
+            <table class="mySaju-table" border="2" data-ke-align="alignCenter">
+                <tbody>
+                <tr>
+                    <td colspan="2" style="width: 70%;">나를 찾아가는</td>
+                    <td colspan="3" style="width: 30%;">여행</td>
+                </tr>
+                <tr>
+                    <td style="width: 5%;">6.</td>
+                    <td id="oHaengMog" style="width: 65%;"></td>
+                    <td colspan="3" style="width: 30%;"><button class="green-btn" id="oHaengMogButton">목(木)</button></td>
+                </tr>
+                <tr>
+                    <td style="width: 5%;">7.</td>
+                    <td id="oHaengHwa" style="width: 65%;"></td>
+                    <td colspan="3" style="width: 30%;"><button class="red-btn" id="oHaengHwaButton">화(火)</button></td>
+                </tr>
+                <tr>
+                    <td style="width: 5%;">8.</td>
+                    <td id="oHaengTo" style="width: 65%;"></td>
+                    <td colspan="3" style="width: 30%;"><button class="yellow-btn" id="oHaengToButton">토(土)</button></td>
+                </tr>
+                <tr>
+                    <td style="width: 5%;">9.</td>
+                    <td id="oHaengGeum" style="width: 65%;"></td>
+                    <td colspan="3" style="width: 30%;"><button class="white-btn" id="oHaengGeumButton">금(金)</button></td>
+                </tr>
+                <tr>
+                    <td style="width: 5%;">10.</td>
+                    <td id="oHaengSu" style="width: 65%;"></td>
+                    <td colspan="3" style="width: 30%;"><button class="grey-btn" id="oHaengSuButton">수(水)</button></td>
+                </tr>
+                </tbody>
+            </table>
+            <br>
+            <table class="mySaju-table" id="sibsinTable" border="2" data-ke-align="alignCenter">
+                <tbody>
+                <tr>
+                    <td colspan="2" style="width: 70%;">한계를 받아들이는</td>
+                    <td colspan="3" style="width: 30%;">시간</td>
+                </tr>
+                </tbody>
+            </table>
+            <br>
+            <table class="mySaju-table" id="sibsinMixTable" border="2" data-ke-align="alignCenter">
+                <tbody>
+                <tr>
+                    <td colspan="2" style="width: 70%;">잠재력을 일깨우는</td>
+                    <td colspan="3" style="width: 30%;">시간</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- mySajuScript JS File -->
+<script type="text/javascript" src="mySajuScript.js"></script>
+<script>
+
+    function openCalendar() {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = today.getMonth() + 1;
+
+        window.open(
+            `/calendar-page/${year}/${month}`,
+            'calendarPopup',
+            'width=600,height=500,scrollbars=yes'
+        );
+    }
+
+</script>
+
+</body>
+
+</html>

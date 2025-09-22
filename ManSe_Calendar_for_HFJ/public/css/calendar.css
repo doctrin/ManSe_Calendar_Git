@@ -1,0 +1,95 @@
+@font-face { font-family: system-ui; src: local("Noto Sans KR"), local("Apple SD Gothic Neo"), local("Malgun Gothic"); }
+
+body {
+    margin: 16px;
+    font-family: system-ui, -apple-system, "Noto Sans KR", "Malgun Gothic", sans-serif;
+    color: #333;
+}
+
+.toolbar {
+    display: grid;
+    grid-template-columns: 120px 1fr 120px;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.toolbar h1 {
+    text-align: center;
+    font-size: 22px;
+    margin: 0;
+}
+
+.nav-btn {
+    display: inline-block;
+    background: #f39c12;
+    color: #fff;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.cal {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.cal th, .cal td {
+    border: 1px solid #dcdcdc;
+}
+
+.cal th {
+    background: #f3f4f6;
+    font-weight: 700;
+    padding: 8px 0;
+}
+
+.cal th.sun { color: #e74c3c; }
+.cal th.sat { color: #3498db; }
+
+.cell, .empty {
+    height: 96px;
+    vertical-align: top;
+    position: relative;
+    padding: 6px 6px 6px 8px;
+    background: #fff;
+}
+
+.empty { background: #fafafa; }
+
+.solar {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.solar.sun { color: #e74c3c; } /* 일요일 */
+.solar.sat { color: #0070d8; } /* 토요일 */
+
+.lunar {
+    margin-top: 2px;
+    font-size: 12px;
+    color: #15a085;     /* 연두+청록 느낌 */
+    font-weight: 700;
+}
+
+.ganzhi {
+    margin-top: 2px;
+    font-size: 12px;
+    color: #666;
+}
+
+/* 절기 배지 (초록) */
+.term-badge {
+    position: absolute;
+    top: 4px;
+    right: 6px;
+    background: #27ae60;
+    color: #fff;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    line-height: 1.2;
+}
