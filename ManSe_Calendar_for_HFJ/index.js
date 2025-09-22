@@ -619,9 +619,3 @@ app.get('/api/month-calendar/:year/:month', async (req, res) => {
 app.listen(3000, function () { // <-- 이 코드 바로 위에 붙여넣으시면 됩니다.
     console.log('Server is running on port 3000');
 });
-
-
-// module.exports.handler = serverless(app);
-app.listen(3000, function () {
-    console.log('Server is running on port 3000');
-});
