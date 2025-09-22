@@ -36,7 +36,7 @@
     <div class="main-content">
         <div class="sub-page-container">
 
-            <button onclick="openCalendar()">일진달력 보기</button>
+            <button onclick="const today = new Date(); openCalendar(today.getFullYear(), today.getMonth() + 1);">일진달력 보기</button>
 
             <button type="button" onclick="testCalcSaju()">계산버전(DB미사용) 테스트</button>
 
@@ -202,21 +202,6 @@
 
 <!-- mySajuScript JS File -->
 <script type="text/javascript" src="mySajuScript.js"></script>
-<script>
-
-    function openCalendar() {
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = today.getMonth() + 1;
-
-        window.open(
-            `/calendar-page/${year}/${month}`,
-            'calendarPopup',
-            'width=600,height=500,scrollbars=yes'
-        );
-    }
-
-</script>
 
 </body>
 

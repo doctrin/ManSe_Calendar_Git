@@ -340,3 +340,130 @@ async function testCalcSaju() {
     console.log('계산기반 결과', data);
     alert('계산기반 결과를 콘솔에서 확인하세요.');
 }
+
+// =======================================================
+// [추가] 일진 달력 팝업 기능 (기존 코드 아래에 추가하세요)
+// =======================================================
+
+/**
+ * 달력 팝업을 열고, 백엔드 API로부터 받은 데이터로 내용을 채웁니다.
+ * @param {number} year - 달력을 표시할 년도
+ * @param {number} month - 달력을 표시할 월 (1-12)
+ */
+async function openCalendar(year, month) {
+    // 1. 백엔드에 해당 월의 일진 데이터를 요청합니다.
+    try {
+        const response = await fetch(`/api/month-calendar/${year}/${month}`);
+        if (!response.ok) {
+            throw new Error(`서버 응답 오류: ${response.statusText}`);
+        }
+        const monthData = await response.json();
+        
+        // 2. 달력 UI를 생성하고 화면에 표시합니다.
+        createCalendarPopup(year, month, monthData);
+
+    } catch (error) {
+        console.error('달력 데이터를 불러오는 중 오류 발생:', error);
+        alert('달력 정보를 가져오는 데 실패했습니다.');
+    }
+}
+
+/**
+ * [수정됨] 전달받은 데이터를 기반으로 달력 팝업 HTML을 생성하고 화면에 띄웁니다.
+ * @param {number} year
+ * @param {number} month
+ * [수정됨] @param {Array<Object>} monthData - 일별 데이터 배열 (PHP CLI 결과)
+ */
+/**
+ * [수정됨] 전달받은 데이터를 기반으로 달력 팝업 HTML을 생성하고 화면에 띄웁니다.
+ * (헤더 형식 변경 완료)
+ */
+function createCalendarPopup(year, month, monthData) {
+    // 기존에 열려있는 팝업이 있다면 제거
+    const existingPopup = document.getElementById('calendar-popup');
+    if (existingPopup) {
+        existingPopup.remove();
+    }
+
+    const popup = document.createElement('div');
+    popup.id = 'calendar-popup';
+    popup.style.cssText = `
+        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        width: 600px; background: white; border: 1px solid #ccc; box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        z-index: 1000; padding: 20px; font-family: sans-serif;
+    `;
+
+    // [핵심 수정] 헤더를 만들기 전에, 첫날 데이터에서 년주와 월주 정보를 추출합니다.
+    let yearGanji = '';
+    let monthGanji = '';
+    if (monthData && monthData.length > 0) {
+        const ganjiParts = monthData[0].ganji.split(' '); // "을사(...)년 갑신(...)월 계유(...)일"
+        if (ganjiParts.length === 3) {
+            yearGanji = ganjiParts[0].replace('년', '');   // "을사(乙巳)"
+            monthGanji = ganjiParts[1].replace('월', ''); // "갑신(甲申)"
+        }
+    }
+
+    // [핵심 수정] 헤더 (년/월, 이전/다음 버튼)
+    const prevMonthDate = new Date(year, month - 2);
+    const nextMonthDate = new Date(year, month);
+    // [핵심 수정] h2 태그에 추출한 년주와 월주를 요청하신 형식으로 함께 표시합니다.
+    const headerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <button onclick="openCalendar(${prevMonthDate.getFullYear()}, ${prevMonthDate.getMonth() + 1})">◀ 이전 달</button>
+            <h2 style="color: black;">${year}년 (${yearGanji}) ${String(month).padStart(2, '0')}월 (${monthGanji})</h2>
+            <button onclick="openCalendar(${nextMonthDate.getFullYear()}, ${nextMonthDate.getMonth() + 1})">다음 달 ▶</button>
+        </div>
+    `;
+
+    // 테이블 생성 (이하 로직은 동일)
+    let tableHTML = `
+        <table style="width: 100%; border-collapse: collapse; text-align: center;">
+            <thead><tr>
+                <th style="color: red;">일</th>
+                <th style="color: black;">월</th>
+                <th style="color: black;">화</th>
+                <th style="color: black;">수</th>
+                <th style="color: black;">목</th>
+                <th style="color: black;">금</th>
+                <th style="color: blue;">토</th>
+            </tr></thead>
+            <tbody>
+    `;
+
+    const firstDayOfWeek = new Date(year, month - 1, 1).getDay();
+    let currentDay = 1;
+    let tableBody = '';
+
+    for (let i = 0; i < 6; i++) {
+        let row = '<tr>';
+        for (let j = 0; j < 7; j++) {
+            if (i === 0 && j < firstDayOfWeek || currentDay > monthData.length) {
+                row += '<td></td>';
+            } else {
+                const dayData = monthData[currentDay - 1];
+                const ganjiParts = dayData.ganji.split(' ');
+                const dayGanji = ganjiParts.length === 3 ? ganjiParts[2].replace('일', '') : '';
+
+                row += `
+                    <td style="border: 1px solid #ddd; padding: 5px; vertical-align: top; height: 80px;">
+                        <div style="font-weight: bold; color: ${j === 0 ? 'red' : (j === 6 ? 'blue' : 'black')}">${dayData.solar.day}</div>
+                        <div style="font-size: 12px; color: green;">${dayData.month}.${dayData.day}${dayData.leap ? '윤' : ''}</div>
+                        <div style="font-size: 13px; color: #555;">${dayGanji}</div>
+                    </td>
+                `;
+                currentDay++;
+            }
+        }
+        row += '</tr>';
+        tableBody += row;
+        if (currentDay > monthData.length) break;
+    }
+
+    tableHTML += tableBody + '</tbody></table>';
+
+    const closeButtonHTML = `<button onclick="this.parentElement.remove()" style="position: absolute; top: 10px; right: 10px; cursor: pointer;">X</button>`;
+
+    popup.innerHTML = headerHTML + tableHTML + closeButtonHTML;
+    document.body.appendChild(popup);
+}
