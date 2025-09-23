@@ -312,32 +312,43 @@ async function getMySajuCalc(birthDate, birthTime) {
 
 // (테스트 버튼용) 계산버전 호출해서 결과 확인
 /**
- * [수정됨] 생년월일시를 입력받아, DB를 사용하지 않는 계산 API('/GetMySajuCalc')를 호출하여
- * 년주, 월주, 일주를 콘솔에 출력하는 테스트 함수입니다.
- */
-/**
- * [수정됨] index.html에서 전달받은 생년월일시 정보를 사용하여,
- * DB를 사용하지 않는 계산 API('/GetMySajuCalc')를 호출하고 결과를 콘솔에 출력합니다.
- */
-/**
- * [최종 수정] localStorage에 저장된 사주 정보(mySaju 객체)를 사용하여,
- * DB를 사용하지 않는 계산 API('/GetMySajuCalc')를 호출하고 결과를 콘솔에 출력합니다.
+ * [수정됨] localStorage의 정보를 사용하여, 계산 API('/GetMySajuCalc')를 호출하고
+ * 년주, 월주, 일주, 시주를 콘솔에 출력합니다.
  */
 async function testCalcSaju() {
-    // 1. [핵심] localStorage에서 이미 불러온 mySaju 객체의 원본 데이터를 사용합니다.
-    //    - mySaju.birthDate: 원본 생년월일 (예: "19781219")
-    //    - mySaju.birthTime: 원본 출생시간 (예: "1830")
-    if (!mySaju || !mySaju.birthDate) {
-        alert("localStorage에서 사주 정보를 찾을 수 없습니다. index.html 페이지에서 다시 입력해주세요.");
-        return;
+    const birthDate = localStorage.getItem('birthDate'); // sessionStorage 대신 localStorage 사용
+    const birthTime = localStorage.getItem('birthTime'); // sessionStorage 대신 localStorage 사용
+
+    if (!birthDate) {
+        // [수정] index.html에서 넘어온 정보를 담고 있는 sajuData 객체를 직접 사용합니다.
+        const sajuDataFromStorage = JSON.parse(localStorage.getItem('sajuData'));
+        if (!sajuDataFromStorage) {
+            alert("localStorage에서 사주 정보를 찾을 수 없습니다. index.html 페이지에서 다시 입력해주세요.");
+            return;
+        }
+        const mySaju = JSON.parse(sajuDataFromStorage.mySajuResult);
+
+        // mySaju 객체에서 birthDate와 birthTime을 가져옵니다.
+        const storedBirthDate = mySaju.birthDate;
+        const storedBirthTime = mySaju.birthTime;
+
+        if (!storedBirthDate) {
+            alert("localStorage에서 생년월일 정보를 찾을 수 없습니다.");
+            return;
+        }
+
+        console.log(`[요청 정보] (LocalStorage) 생년월일: ${storedBirthDate}, 출생시간: ${storedBirthTime}`);
+        await callSajuCalcAPI(storedBirthDate, storedBirthTime);
+
+    } else {
+        // 만약을 위해 sessionStorage 로직도 남겨둡니다.
+        console.log(`[요청 정보] (SessionStorage) 생년월일: ${birthDate}, 출생시간: ${birthTime}`);
+        await callSajuCalcAPI(birthDate, birthTime);
     }
+}
 
-    const birthDate = mySaju.birthDate;
-    const birthTime = mySaju.birthTime;
-
-    console.log(`[요청 정보] (LocalStorage) 생년월일: ${birthDate}, 출생시간: ${birthTime}`);
-
-    // 2. 백엔드의 계산 API('/GetMySajuCalc')에 POST 방식으로 데이터를 전송합니다.
+// 공통 API 호출 로직을 별도 함수로 분리
+async function callSajuCalcAPI(birthDate, birthTime) {
     try {
         const response = await fetch('/GetMySajuCalc', {
             method: 'POST',
@@ -346,7 +357,7 @@ async function testCalcSaju() {
             },
             body: JSON.stringify({
                 birthDate: birthDate,
-                birthTime: birthTime || "0000"
+                birthTime: birthTime || "" // 시간이 없으면 빈 문자열로 보냅니다.
             }),
         });
 
@@ -356,11 +367,12 @@ async function testCalcSaju() {
 
         const sajuData = await response.json();
 
-        // 3. 서버로부터 받은 결과를 콘솔에 보기 좋게 출력합니다.
+        // [핵심] 서버로부터 받은 결과를 콘솔에 보기 좋게 출력합니다. (시주 포함)
         console.log("---------- [계산 결과 (DB 미사용)] ----------");
         console.log("년주(年柱):", sajuData.yearPillar);
         console.log("월주(月柱):", sajuData.monthPillar);
         console.log("일주(日柱):", sajuData.dayPillar);
+        console.log("시주(時柱):", sajuData.hourPillar || "(시간 정보 없음)"); // 시주 출력
         console.log("------------------------------------------");
 
         alert("계산이 완료되었습니다. F12를 눌러 콘솔창에서 결과를 확인하세요.");

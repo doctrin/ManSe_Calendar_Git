@@ -532,6 +532,7 @@ app.get('/calendar-page', (req, res) => {
 
 // ✅ 계산 기반(달력 계산) 사주 API
 // ✅ [수정됨] 계산 기반 사주 API (우리가 만든 cli.php 사용)
+// ✅ [수정됨] 계산 기반 사주 API (시주 계산 기능 추가)
 app.post("/GetMySajuCalc", (req, res) => {
     const { birthDate, birthTime } = req.body;
 
@@ -548,13 +549,22 @@ app.post("/GetMySajuCalc", (req, res) => {
         }
         try {
             const phpResult = JSON.parse(stdout);
-            const ganjiParts = phpResult.ganji.split(' '); // "을사(乙巳)년 갑신(甲申)월 계유(癸酉)일"
+            const ganjiParts = phpResult.ganji.split(' ');
 
-            // 프론트엔드에서 요청한 형식에 맞춰 결과를 재구성합니다.
+            const dayPillarString = ganjiParts[2].replace('일','');
+            const dayGan = dayPillarString.substring(0, 1); // 일주에서 일간만 추출
+
+            // [핵심] 시주 계산: birthTime이 있을 경우에만 기존 getTime() 함수를 호출합니다.
+            let hourPillar = '';
+            if (birthTime && birthTime.length === 4) {
+                hourPillar = getTime(dayGan, birthTime);
+            }
+
             const result = {
                 yearPillar: ganjiParts[0].replace('년',''),
                 monthPillar: ganjiParts[1].replace('월',''),
-                dayPillar: ganjiParts[2].replace('일','')
+                dayPillar: dayPillarString,
+                hourPillar: hourPillar // 계산된 시주를 결과에 추가
             };
             res.json(result);
 
